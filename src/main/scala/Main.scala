@@ -8,12 +8,25 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 
 object Boot extends App {
-    // we need an ActorSystem to host our service
-    implicit val system = ActorSystem("scatalogue-app")
+    val host = "localhost"
+    val port = 8000
 
     //create our service actor
-    val service = system.actorOf(Props[ProductServiceActor], "product-service")
+    implicit val system = ActorSystem("scatalogue-service")
+    implicit val executionContext = system.dispatcher
+    implicit val timeout = Timeout(10 seconds)
+  
+    val api = system.actorOf(Props(new RestInterface))
 
     //bind our actor to an HTTP port
-    IO(Http) ! Http.Bind(service, interface = "localhost", port = 8000)
+    IO(Http).ask(Http.Bind(listener = api, interface = host, port = port))
+    .mapTo[Http.Event]
+    .map {
+      case Http.Bound(address) =>
+        println(s"REST interface bound to $address")
+      case Http.CommandFailed(cmd) =>
+        println("REST interface could not bind to " +
+          s"$host:$port, ${cmd.failureMessage}")
+        system.shutdown()
+    }
 }
