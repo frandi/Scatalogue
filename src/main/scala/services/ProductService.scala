@@ -25,7 +25,8 @@ class ProductService(implicit val executionContext: ExecutionContext) {
 
     def updateEntity(product: Product): Product = {
       val name = update.name.getOrElse(product.name)
-      Product(id, name)
+      val categoryid = update.name.getOrElse(product.categoryid)
+      Product(id, name, categoryid)
     }
 
     getProduct(id).flatMap { maybeProduct =>

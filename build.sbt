@@ -4,7 +4,7 @@ version := "0.1-ALPHA"
 
 scalaVersion := "2.11.6"
 
-scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature")
 
 libraryDependencies ++= {
     val akkaVersion = "2.3.9"
